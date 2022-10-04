@@ -66,7 +66,7 @@ def eval_is_fid(images, dataset='cifar10', args=None):
         cuda=True,
         isc=True,
         fid=True,
-        # kid=True,
+        kid=True,
         verbose=False,
     )
 

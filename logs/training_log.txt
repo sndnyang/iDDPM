@@ -1994,19 +1994,3 @@ eval images num torch.Size([10000, 3, 32, 32]) tensor(0.) tensor(255.)
 10-04 13:24:06: iddpm_main.py[202]: sample takes 120.83346724510193
 10-04 13:24:06: iddpm_main.py[218]: PID 65521 Total ~ 21:28:19.204350, epoch 0:02:34.598409,remain 8:35:19.681740
 10-04 13:24:08: iddpm_main.py[280]: [Epoch 302/500][   0:391]  Loss: 0.0714 CE: 0.0000 Dif: 0.0714 Top-1: 0.000  LR: 0.000100
-Traceback (most recent call last):
-  File "iddpm_main.py", line 306, in <module>
-    main(args)
-  File "iddpm_main.py", line 185, in main
-    criterion, optimizer, epoch, scheduler, arg)
-  File "iddpm_main.py", line 270, in train
-    # scheduler.step()
-  File "/home/xyang2/software/conda/envs/tf15_10/lib/python3.6/site-packages/torch/optim/optimizer.py", line 88, in wrapper
-    return func(*args, **kwargs)
-  File "/home/xyang2/software/conda/envs/tf15_10/lib/python3.6/site-packages/torch/autograd/grad_mode.py", line 28, in decorate_context
-    return func(*args, **kwargs)
-  File "/home/xyang2/software/conda/envs/tf15_10/lib/python3.6/site-packages/torch/optim/adamw.py", line 148, in step
-    eps=group['eps'])
-  File "/home/xyang2/software/conda/envs/tf15_10/lib/python3.6/site-packages/torch/optim/_functional.py", line 139, in adamw
-    denom = (exp_avg_sq.sqrt() / math.sqrt(bias_correction2)).add_(eps)
-KeyboardInterrupt

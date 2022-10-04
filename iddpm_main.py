@@ -133,9 +133,9 @@ def main(arg):
         output = train(train_loader, 
                        model, ema_model, diffusion, schedule_sampler,
                        optimizer, epoch, arg)
-        lr, avg_loss, avg_acc, avg_ce, avg_dif = output
+        lr, avg_loss, avg_dif = output
         metrics = {'lr': lr, 'loss': avg_loss}
-        tf_metrics = {"lr": lr, "Train/Loss": avg_loss, "Train/Acc": avg_acc, "Train/CELoss": avg_ce, "Train/DifLoss": avg_dif}
+        tf_metrics = {"lr": lr, "Train/Loss": avg_loss, "Train/DifLoss": avg_dif}
         end = time.time()
 
         torch.save({'model_state_dict': model.state_dict(), 'epoch': epoch, 'optimizer_state_dict': optimizer.state_dict()},
@@ -183,14 +183,14 @@ def train(train_loader,
           model, ema_model, diffusion, schedule_sampler,
           optimizer, epoch, arg):
     model.train()
-    loss_val, acc1_val = 0, 0
     n = 0
-    avg_loss, avg_acc1 = 0, 0
-    avg_ce_loss, avg_dif_loss = 0, 0
+    avg_dif_loss = 0
     lr = arg.lr
-    avg_ce, avg_dif = 0, 0
-    for i, (x_p, _) in enumerate(train_loader):
+    for i, (x_p, y_p) in enumerate(train_loader):
         x_p = x_p.to(arg.device)
+
+        y_p = y_p.to(arg.device)
+        # assign y_p to model_kwargs for conditional training
         n += x_p.size(0)
 
         optimizer.zero_grad()
@@ -209,7 +209,6 @@ def train(train_loader,
 
         loss = dif_loss
         avg_dif_loss += float(dif_loss.item() * x_p.size(0))
-        loss_val += float(loss.item() * x_p.size(0))
         loss.backward()
 
         # torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -221,14 +220,14 @@ def train(train_loader,
         lr = optimizer.param_groups[0]["lr"]
 
         if arg.print_freq >= 0 and i % arg.print_freq == 0:
-            avg_loss, avg_acc1 = (loss_val / n), (acc1_val / n)
-            avg_ce, avg_dif = avg_ce_loss / n, avg_dif_loss / n
+            avg_dif = avg_dif_loss / n
+            avg_loss = avg_dif
             size = len(train_loader)
-            print(f'[Epoch {epoch+1}/{arg.epochs}][{i:4d}:{size}]  Loss: {avg_loss:.4f} CE: {avg_ce:.4f} Dif: {avg_dif:.4f} Top-1: {avg_acc1:4.3f}  LR: {lr:.6f}')
+            print(f'[Epoch {epoch+1}/{arg.epochs}][{i:4d}:{size}]  Loss: {avg_loss:.4f} Dif: {avg_dif:.4f} LR: {lr:.6f}')
 
-    avg_loss, avg_acc1 = (loss_val / n), (acc1_val / n)
-    avg_ce, avg_dif = avg_ce_loss / n, avg_dif_loss / n
-    return lr, avg_loss, avg_acc1, avg_ce, avg_dif
+    avg_dif = avg_dif_loss / n
+    avg_loss = avg_dif
+    return lr, avg_loss, avg_dif
 
 
 if __name__ == '__main__':

@@ -14,6 +14,17 @@ n_classes = 10
 print = wlog
 
 
+def eval_buffer(buffer, arg):
+    eval_start = time.time()
+    plot('{}/samples_0.png'.format(arg.dir_path), buffer[:100])
+    metrics = eval_is_fid(buffer, dataset=arg.dataset, args=arg)
+    inc_score = metrics['inception_score_mean']
+    fid = metrics['frechet_inception_distance']
+    print("with %d" % buffer.shape[0])
+    print("Inception score of {}".format(inc_score))
+    print("FID of score {}".format(fid))
+
+
 def new_samples(model, diffusion, arg):
     im_sz = arg.image_size
     start = time.time()
@@ -31,7 +42,7 @@ def new_samples(model, diffusion, arg):
         samples = diffusion.p_sample_loop(
             model, (bs, 3, im_sz, im_sz), clip_denoised=True, model_kwargs=None
         )
-        replay_buffer[i * bs: (i + 1) * bs] = samples
+        replay_buffer[i * bs: (i + 1) * bs] = (samples + 1) / 2
 
         if (i + 1) % 10 == 0:
             now = time.time()

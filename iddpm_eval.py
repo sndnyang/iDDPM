@@ -1,5 +1,6 @@
 import torch.optim
 import torch.utils.data
+import torch.nn as nn
 import torchvision.transforms as transforms
 
 from ExpUtils import *
@@ -77,6 +78,10 @@ def main(arg):
 
     data_info = datainfo(logger, arg)
 
+    if arg.eval == 'buffer':
+        buffer = torch.load(arg.resume)
+        eval_buffer(buffer)
+
     normalize = [transforms.Normalize(mean=data_info['stat'][0], std=data_info['stat'][1])]
     augmentations = transforms.Compose([
         transforms.ToTensor(),
@@ -108,9 +113,9 @@ def main(arg):
     if arg.eval == 'nll':
         assert arg.dataset == 'cifar10', "It's simple to load other datasets"
         # https://github.com/openai/guided-diffusion/blob/main/guided_diffusion/gaussian_diffusion.py#L709
-        from iddpm import GaussianDiffusion as NllDiffusion, LossType, ModelVarType, ModelMeanType
+        from iddpm.gaussian_diffusion import GaussianDiffusion as NllDiffusion, LossType, ModelVarType, ModelMeanType
         nll_model = NllDiffusion(
-            betas=model.betas.cpu(),
+            betas=diffusion.betas.cpu(),
             model_mean_type=ModelMeanType.EPSILON,
             model_var_type=ModelVarType.FIXED_SMALL,
             loss_type=LossType.MSE,

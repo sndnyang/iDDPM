@@ -59,6 +59,25 @@ python iddpm_eval.py --eval gen --resume path/your/checkpoint.pth --gpu-id 0
 
 The comparison to TF https://github.com/sndnyang/inception_score_fid/blob/master/eval_is_fid_torch_fidelity.ipynb 
 
+## Evaluate NLL 
+
+negative log likelihood / bit per dim
+
+```
+python iddpm_eval.py --eval nll --resume path/your/checkpoint.pth --gpu-id 0
+```
+
+*Note*
+
+Check Row 119-122 in iddpm_eval.py, make sure it's consistent with the trained checkpoint model.
+```
+        model_mean_type=ModelMeanType.EPSILON,
+        model_var_type=ModelVarType.LEARNED,
+        loss_type=LossType.MSE,
+```
+
+The evaluation is very slow~~~
+
 # Change Log
 
 
@@ -67,11 +86,11 @@ The comparison to TF https://github.com/sndnyang/inception_score_fid/blob/master
 Evaluation
 
 1. Generation and Evaluate IS/FID/KID
+2. Evaluate NLL
 
 TODO
 
 1. Faster sampling
-2. Evaluate NLL
 
 2022.10.03
 

@@ -1,14 +1,14 @@
+import argparse
+import numpy as np
 import torch.optim
 import torch.utils.data
 import torch.nn as nn
 import torchvision.transforms as transforms
 
 from ExpUtils import *
-import argparse
 from utils.dataloader import datainfo, dataload
 from eval_tasks import *
 from iddpm.script_util import create_model_and_diffusion, model_and_diffusion_defaults
-# from iddpm.resample import create_named_schedule_sampler
 import warnings
 warnings.filterwarnings("ignore", category=Warning)
 
@@ -115,9 +115,9 @@ def main(arg):
         # https://github.com/openai/guided-diffusion/blob/main/guided_diffusion/gaussian_diffusion.py#L709
         from iddpm.gaussian_diffusion import GaussianDiffusion as NllDiffusion, LossType, ModelVarType, ModelMeanType
         nll_model = NllDiffusion(
-            betas=diffusion.betas.cpu(),
+            betas=diffusion.betas,
             model_mean_type=ModelMeanType.EPSILON,
-            model_var_type=ModelVarType.FIXED_SMALL,
+            model_var_type=ModelVarType.LEARNED,
             loss_type=LossType.MSE,
             rescale_timesteps=False,
         )

@@ -60,13 +60,17 @@ def eval_is_fid(images, dataset='cifar10', args=None):
     if dataset not in ['cifar10', 'stl10']:
         target = load_dataset(args)
 
+    kid = False
+    if len(images) == len(target):
+        # KID only works when source and target have the same size.
+        kid = True
     metrics_dict = torch_fidelity.calculate_metrics(
         input1=px_dataset,
         input2=target,
         cuda=True,
         isc=True,
         fid=True,
-        kid=True,
+        kid=kid,
         verbose=False,
     )
 

@@ -3,14 +3,11 @@ import torch.utils.data
 import torchvision.transforms as transforms
 
 from ExpUtils import *
-from diffusion import GaussianDiffusion
 import argparse
 from utils.dataloader import datainfo, dataload
-from models.create_model import create_model
-from Task.eval_tasks import *
-from utils.eval_quality import eval_is_fid
+from eval_tasks import *
 from iddpm.script_util import create_model_and_diffusion, model_and_diffusion_defaults
-from iddpm.resample import create_named_schedule_sampler
+# from iddpm.resample import create_named_schedule_sampler
 import warnings
 warnings.filterwarnings("ignore", category=Warning)
 
@@ -111,7 +108,7 @@ def main(arg):
     if arg.eval == 'nll':
         assert arg.dataset == 'cifar10', "It's simple to load other datasets"
         # https://github.com/openai/guided-diffusion/blob/main/guided_diffusion/gaussian_diffusion.py#L709
-        from gdiffusion import GaussianDiffusion as NllDiffusion, LossType, ModelVarType, ModelMeanType
+        from iddpm import GaussianDiffusion as NllDiffusion, LossType, ModelVarType, ModelMeanType
         nll_model = NllDiffusion(
             betas=model.betas.cpu(),
             model_mean_type=ModelMeanType.EPSILON,
@@ -124,8 +121,8 @@ def main(arg):
         train_loader = torch.utils.data.DataLoader(val_dataset, batch_size=100, shuffle=False, pin_memory=True, num_workers=arg.workers)
         val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=100, shuffle=False, pin_memory=True, num_workers=arg.workers)
 
-        val_bpd = run_bpd_on_dataset(nll_model, f, val_loader, arg)
-        train_bpd = run_bpd_on_dataset(nll_model, f, train_loader, arg)
+        val_bpd = run_bpd_on_dataset(nll_model, model, val_loader, arg)
+        train_bpd = run_bpd_on_dataset(nll_model, model, train_loader, arg)
         print(f'train bpd {train_bpd}, test bpd {val_bpd}')
 
 

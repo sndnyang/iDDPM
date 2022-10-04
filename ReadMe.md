@@ -33,14 +33,19 @@ A larger `diffusion_steps` will cause a much longer generation during traing.  Y
 
 ### My results
 
-The figure of traing curves and logs, Coming soon
+The figure of traing curves and logs
+
+On wandb.ai
+
+https://wandb.ai/sndnyang/biggest/reports/iDDPM--VmlldzoyNzQwMTQ4?accessToken=spxh6nc9asp4l1og8hoifeym9oxkx4j8av78hkyp06s9jy4gsjf7zt5yezg3gceo
+
+The replay buffer's FID is ~10, while  generating 10k images from scratch only achieves ~16.7
 
 - Due to computational resource limitation, I use `num_channels=64` for CIFAR10 (reduce Number of Params from 52M to 13M, GPU memory 11.9MiB). `T=1000`.
-- I found the EMA 0.9999 is very slow, so I use 0.999.  I found warmup doesn't help at begining.
+- I found the EMA 0.9999 is very slow, so I use 0.999.  I found warmup doesn't help at begining. And learning rate decaying also doesn't help.
 - The number of iterations is 500 (epochs) * 390(iterations/epoch), batch size is 128. 
 - Every epoch takes more than 2.6 minutes. The sampling of 100 images with `T=1000` takes about 100 seconds.
 - The training time should be ~21:40:00, not including the sampling and evaluation.
-
 
 
 
@@ -67,6 +72,8 @@ negative log likelihood / bit per dim
 python iddpm_eval.py --eval nll --resume path/your/checkpoint.pth --gpu-id 0
 ```
 
+However,  bpd ~ 2822.  Something must goes wrong.
+
 *Note*
 
 Check Row 119-122 in iddpm_eval.py, make sure it's consistent with the trained checkpoint model.
@@ -86,11 +93,12 @@ The evaluation is very slow~~~
 Evaluation
 
 1. Generation and Evaluate IS/FID/KID
-2. Evaluate NLL
+2. Evaluate NLL with error
 
 TODO
 
 1. Faster sampling
+2. Correct the evaluation of NLL.
 
 2022.10.03
 

@@ -74,8 +74,6 @@ negative log likelihood / bit per dim
 python iddpm_eval.py --eval nll --resume path/your/checkpoint.pth --gpu-id 0
 ```
 
-However,  bpd ~ 2822.  Something must goes wrong.
-
 *Note*
 
 Check Row 119-122 in iddpm_eval.py, make sure it's consistent with the trained checkpoint model.
@@ -90,17 +88,28 @@ The evaluation is very slow~~~
 # Change Log
 
 
-2022.10.04
+### 2022.10.30
+
+Notebooks for 
+
+1. Evaluate NLL
+2. Generate and FID
+
+TODO
+
+1. Faster sampling (Not working on it)
+
+
+### 2022.10.04
 
 Evaluation
 
 1. Generation and Evaluate IS/FID/KID
-2. Evaluate NLL with error
+2. Evaluate NLL
 
 TODO
 
 1. Faster sampling
-2. Correct the evaluation of NLL.
 
 2022.10.03
 

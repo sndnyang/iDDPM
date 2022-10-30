@@ -1,4 +1,5 @@
 import argparse
+from tabnanny import check
 import numpy as np
 import torch.optim
 import torch.utils.data
@@ -104,8 +105,13 @@ def main(arg):
     print(f'Number of params: {format(n_parameters, ",")}')
 
     checkpoint = torch.load(arg.resume)
-    model.load_state_dict(checkpoint['model_state_dict'])
+    if isinstance(checkpoint, dict):
+        model.load_state_dict(checkpoint['model_state_dict'])
+    else:
+        model.load_state_dict(checkpoint)
+
     model = model.to(device)
+    model = model.eval()
 
     if arg.eval == 'gen':
         new_samples(model, diffusion, arg)

@@ -15,6 +15,8 @@ optional: wandb
 
 # Usage
 
+Contains the code for: 1) Train, 2) Generate and FID, 3) NLL/BPD, namely negative log likelihood / bit per dim.
+
 ## Training
 
 The training command is simple.

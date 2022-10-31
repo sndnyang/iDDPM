@@ -66,6 +66,18 @@ python iddpm_eval.py --eval gen --resume path/your/checkpoint.pth --gpu-id 0
 
 The comparison to TF https://github.com/sndnyang/inception_score_fid/blob/master/eval_is_fid_torch_fidelity.ipynb 
 
+### DDIM
+
+Also use their official implementation, just a command
+
+```
+python iddpm_eval.py --eval gen --use_ddim --resume cifar10_uncond_50M_500K.pt --gpu-id 0 --timestep_respacing 50
+```
+
+Speed: batch 10/1000 images takes 0:01:17.226265
+
+Logs: logs/ddim_sampling_50.log
+
 ## Evaluate NLL 
 
 negative log likelihood / bit per dim
@@ -87,6 +99,9 @@ The evaluation is very slow~~~
 
 # Change Log
 
+### 2022.10.31
+
+Faster sampling, namely call `--use_ddim` 
 
 ### 2022.10.30
 

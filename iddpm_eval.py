@@ -9,7 +9,7 @@ import torchvision.transforms as transforms
 from ExpUtils import *
 from utils.dataloader import datainfo, dataload
 from eval_tasks import *
-from iddpm.script_util import create_model_and_diffusion, model_and_diffusion_defaults, args_to_dict
+from iddpm.script_util import create_model_and_diffusion, model_and_diffusion_defaults, args_to_dict, add_dict_to_argparser
 import warnings
 warnings.filterwarnings("ignore", category=Warning)
 
@@ -55,6 +55,24 @@ def init_parser():
 
     arg_parser.add_argument("--wandb", action="store_true", help="If set, use wandb")
 
+    defaults = dict(
+        data_dir="./data",
+        schedule_sampler="uniform",
+        lr=1e-4,
+        weight_decay=0.0,
+        lr_anneal_steps=0,
+        batch_size=1,
+        microbatch=-1,  # -1 disables microbatches
+        ema_rate="0.9999",  # comma-separated list of EMA values
+        log_interval=10,
+        save_interval=10000,
+        resume_checkpoint="",
+        use_fp16=False,
+        fp16_scale_growth=1e-3,
+    )
+    defaults.update(model_and_diffusion_defaults())
+
+    add_dict_to_argparser(arg_parser, defaults)
     return arg_parser
 
 

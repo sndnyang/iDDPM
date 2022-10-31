@@ -33,13 +33,11 @@ def init_parser():
 
     # Optimization hyperparams
     arg_parser.add_argument('-b', '--batch_size', default=128, type=int, metavar='N', help='mini-batch size (default: 128)', dest='batch_size')
-    arg_parser.add_argument("--diffusion_steps", type=int, default=1000)
-    arg_parser.add_argument('--timestep_respacing', default='', type=str, metavar='N', help='T')
     arg_parser.add_argument('--loss', type=str, default='l1', choices=['l1', 'l2'])
-
     arg_parser.add_argument("--use_ddim", action="store_true", help="")
 
     arg_parser.add_argument('--no_cuda', action='store_true', help='disable cuda')
+
     
     arg_parser.add_argument("--multi", action="store_true", help="maybe the model is trained with DataParallel")
 
@@ -61,7 +59,6 @@ def init_parser():
         lr=1e-4,
         weight_decay=0.0,
         lr_anneal_steps=0,
-        batch_size=1,
         microbatch=-1,  # -1 disables microbatches
         ema_rate="0.9999",  # comma-separated list of EMA values
         log_interval=10,
@@ -127,10 +124,12 @@ def main(arg):
     print(f'Number of params: {format(n_parameters, ",")}')
 
     checkpoint = torch.load(arg.resume)
-    if isinstance(checkpoint, dict):
-        model.load_state_dict(checkpoint['model_state_dict'])
-    else:
+    print(type(checkpoint))
+    import collections
+    if isinstance(checkpoint, collections.OrderedDict):
         model.load_state_dict(checkpoint)
+    else:
+        model.load_state_dict(checkpoint['model_state_dict'])
 
     model = model.to(device)
     model = model.eval()

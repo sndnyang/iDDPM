@@ -9,7 +9,7 @@ import torchvision.transforms as transforms
 from ExpUtils import *
 from utils.dataloader import datainfo, dataload
 from eval_tasks import *
-from iddpm.script_util import create_model_and_diffusion, model_and_diffusion_defaults
+from iddpm.script_util import create_model_and_diffusion, model_and_diffusion_defaults, args_to_dict
 import warnings
 warnings.filterwarnings("ignore", category=Warning)
 
@@ -33,8 +33,11 @@ def init_parser():
 
     # Optimization hyperparams
     arg_parser.add_argument('-b', '--batch_size', default=128, type=int, metavar='N', help='mini-batch size (default: 128)', dest='batch_size')
-    arg_parser.add_argument('--t_step', default=1000, type=int, metavar='N', help='T')
+    arg_parser.add_argument("--diffusion_steps", type=int, default=1000)
+    arg_parser.add_argument('--timestep_respacing', default='', type=str, metavar='N', help='T')
     arg_parser.add_argument('--loss', type=str, default='l1', choices=['l1', 'l2'])
+
+    arg_parser.add_argument("--use_ddim", action="store_true", help="")
 
     arg_parser.add_argument('--no_cuda', action='store_true', help='disable cuda')
     
@@ -94,7 +97,8 @@ def main(arg):
     '''
 
     model, diffusion = create_model_and_diffusion(
-        **model_and_diffusion_defaults()
+        # **model_and_diffusion_defaults()
+        **args_to_dict(args, model_and_diffusion_defaults().keys())
     )
     if arg.multi:
         model = nn.DataParallel(model, device_ids=range(len(arg.gpu_id.split(','))))
@@ -114,7 +118,10 @@ def main(arg):
     model = model.eval()
 
     if arg.eval == 'gen':
-        new_samples(model, diffusion, arg)
+        if arg.use_ddim:
+            ddim_samples(model, diffusion, arg)
+        else:
+            new_samples(model, diffusion, arg)
 
     if arg.eval == 'nll':
         assert arg.dataset == 'cifar10', "It's simple to load other datasets"
